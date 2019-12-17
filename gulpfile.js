@@ -9,7 +9,7 @@ const mocha = require('gulp-mocha');
 gulp.task('docker:run', runCommand('docker-compose up -d'));
 gulp.task('docker:build', runCommand('docker-compose build'));
 gulp.task('test', (cb) => {
-  gulp.src('./test/test.js').pipe(mocha({reporter: 'list', exit: true}));
+  gulp.src('./dockerfiles/test/test.js').pipe(mocha({reporter: 'list', exit: true}));
   cb();
 });
 
