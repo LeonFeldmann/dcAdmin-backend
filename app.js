@@ -36,10 +36,7 @@ app.use(require('express-session')({
 }));
 
 
-/**
- * @param  {} body
- * @param  {} attributes
- */
+// middelware that checks request body for attributes required by the route
 function checkBodyForValidAttributes(req, res, next, attributes) {
   let requestWellComposed = true;
   // console.log(attributes);
@@ -59,7 +56,7 @@ function checkBodyForValidAttributes(req, res, next, attributes) {
   }
 }
 
-// make sure filestructure exists after server restart
+// make sure filestructure exists after server restart/ legacy
 // (empty folders not tracked by git & stuff...)
 function initializeDirectoriesOnServer() {
   // make sure files folder is set up
@@ -90,11 +87,7 @@ function initializeDirectoriesOnServer() {
   }
 }
 
-/**
- * @param  {} req
- * @param  {} res
- * @param  {} next
- */
+// validates token given by request through jwt and sets current user in res.locals for later usage
 // eslint-disable-next-line consistent-return
 function validateToken(req, res, next) {
   const token = req.headers['x-access-token'];
