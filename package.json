@@ -5,7 +5,11 @@
   "main": "app.js",
   "scripts": {
     "test": "mocha",
-    "start": "node app.js"
+    "start": "node app.js",
+    "server:up": "gulp docker:up",
+    "server:down": "gulp docker:down",
+    "server:start": "gulp docker:start",
+    "server:stop": "gulp docker:stop"
   },
   "dependencies": {
     "assert": "^2.0.0",

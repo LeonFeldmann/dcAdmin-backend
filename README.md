@@ -9,6 +9,10 @@ requirements:
 - have docker installed
 - have node installed
 
+
+npm run XXX
+for npm scripts
+
 run 'npm i' in the directory
 run 'docker:up' to build and start the application via docker-compose and run tests
     the backend will be available on localhost:3000

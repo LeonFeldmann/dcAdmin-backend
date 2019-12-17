@@ -184,6 +184,7 @@ module.exports = (app, validateToken, checkBodyForValidAttributes) => {
 
         currentFileCount = files.length;
         if (files.length === 0) {
+          currentFile = null;
           res.statusCode = 204;
           res.set({
             'fileCount': 0,
@@ -242,25 +243,21 @@ module.exports = (app, validateToken, checkBodyForValidAttributes) => {
       res.send();
       return;
     }
-    fs.readdir(dirPath, (err, files) => {
-      if (err) {
-        console.log(err);
-      } else {
         // dynamically generate unique new filename
         const generatedFilename = dirPath + filePrefix;
         const newFilesDir = `./newFiles`;
         // move file from newFiles directory to fs/username
-        fs.move(`${newFilesDir}/${currentFile}`, generatedFilename);
+        await fs.move(`${newFilesDir}/${currentFile}`, generatedFilename);
   
         currentFileCount -= 1;
 
         makedbEntry(year, month, institution, importance, description, title, generatedFilename.substr(2), res.locals.user._id);
 
         // send next file
-        fs.readdir(newFilesDir, (error, otherFiles) => {
+        fs.readdir(newFilesDir, (error, files) => {
           if (error) {
             console.error(error);
-          } else if (otherFiles.length === 0 || currentFileCount === 0) {
+          } else if (files.length === 0 || currentFileCount === 0) {
             currentFile = null;
             console.log(`New file count is: ${currentFileCount}`);
           
@@ -273,17 +270,21 @@ module.exports = (app, validateToken, checkBodyForValidAttributes) => {
              res.send();
           } else {
             console.log(`Current file count is ${currentFileCount}`);
-            console.log(`Current number of files is ${otherFiles.length}`);
+            console.log(`Current number of files is ${files.length}`);
+            console.log(files);
             let index = 0;
             // if (!isLocal) {
             //   index = 6 - currentFileCount;
             //   currentFile = otherFiles[index];
             // } else {
-              // eslint-disable-next-line prefer-destructuring
-              currentFile = otherFiles[1];
             // }
+            console.log(`previous Currentfile was: ${currentFile}`);
+            // set new currentfile, after saving old one
+            // eslint-disable-next-line prefer-destructuring
+            currentFile = files[0];
             console.log(`new Currentfile is: ${currentFile}`);
-            const fileToSend = `${newFilesDir}/${otherFiles[index]}`;
+
+            const fileToSend = `${newFilesDir}/${files[0]}`;
             const stream = fs.createReadStream(fileToSend);
             res.writeHead(200, {
               'Content-disposition': `attachment; filename='${encodeURIComponent(path.basename(fileToSend))}'`,
@@ -296,8 +297,7 @@ module.exports = (app, validateToken, checkBodyForValidAttributes) => {
             stream.pipe(res);
           }
         });
-      }
-    });
+  
   });
   // merge pdf files given by id array and receive specifications of new document
   // currently now working since docker container do not have a java version installed (required for merging lib)

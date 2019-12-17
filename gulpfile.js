@@ -14,10 +14,9 @@ gulp.task('test', (cb) => {
 });
 
 gulp.task('docker:up', gulp.series('docker:build', 'docker:run', 'test'));
-
 gulp.task('docker:start', runCommand('docker-compose start'));
 gulp.task('docker:stop', runCommand('docker-compose stop'));
-gulp.task('docker:down', runCommand('docker-compose down -v'));
+gulp.task('docker:down', runCommand('docker-compose down -v --rmi all'));
 
 function runCommand(command) {
   return function (cb) {
