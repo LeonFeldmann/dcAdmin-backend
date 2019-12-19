@@ -1,7 +1,7 @@
 {
   "name": "dcAdmin-backend",
   "version": "1.0.0",
-  "description": "This is the Backend of the dcAdmin project",
+  "description": "This is the backend of the dcAdmin project",
   "main": "app.js",
   "scripts": {
     "test": "mocha",

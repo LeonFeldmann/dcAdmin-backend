@@ -1,0 +1,824 @@
+openapi: 3.0.0
+servers:
+  - url: 'http://localhost:3000'
+info:
+  description: Backend of the dcAdmin application for the Web Engineering II lecture
+  version: "1.0.0-oas3"
+  title: dcAdmin-backend
+  contact:
+    email: Leon.Feldmann@ibm.com
+tags:
+  - name: documents
+    description: requests concerning document entries in the database
+  - name: auth/user 
+    description: requests regarding authentication and user actions
+  - name: institutions
+    description: requests regarding the institution of document issuing
+  - name: todos
+    description: a todo bound to the current user
+paths:
+
+  '/documents':
+      get:
+        tags:
+          - documents
+        summary: Retrieve all file info for current user
+        parameters:
+        - in: header
+          name: x-access-token
+          schema:
+            type: string
+          required: true
+        responses:
+          200:
+            description: successful operation
+            content: 
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/documentNoID'
+          500: 
+            description: error
+            content:
+              application/json:
+                schema:
+                  type: object
+                  properties:
+                    error:
+                      type: string
+                  example:
+                    error: Error while getting documents, err
+
+  '/documentPDF/{id}':
+    get:
+      tags:
+        - documents
+      summary: retrieve document specified by id
+      parameters:
+        - name: id
+          in: path
+          description: database identifier
+          required: true
+          schema:
+            type: string
+        - in: header
+          name: x-access-token
+          schema:
+            type: string
+          required: true
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/pdf:
+              schema:
+                format: attachment
+        404:
+          description: This id is not associated with any document entry
+        500:
+         description: The document entry does not have a file associated to it
+  
+  '/importDocuments':
+    get:
+      tags:
+        - documents
+      summary: retrieve document count and start receiving files if there are any
+      parameters:
+        - in: header
+          name: x-access-token
+          schema:
+            type: string
+          required: true
+      responses:
+        200:
+          description: a PDF file
+          headers:
+            fileCount:
+              schema:
+                type: integer
+              description: the number of files to import
+          content:
+            application/pdf:
+              schema:
+                format: attachment
+        404:
+          description: no files to import 
+  
+  '/currentDocumentData':
+    post:
+      tags:
+        - documents
+      summary: receive document specifications of current pdf and send next
+      parameters:
+        - in: header
+          name: x-access-token
+          schema:
+            type: string
+          required: true
+      requestBody:
+       content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/documentSpecs'
+      responses:
+        200:
+          description: a PDF file
+          headers:
+            fileCount:
+              schema:
+                type: integer
+              description: the number of files available
+          content:
+            application/pdf:
+              schema:
+                format: attachment
+        204: 
+          description: no files available        
+          headers:
+            fileCount:
+              schema:
+                type: integer
+              description: the number of files available
+  
+  '/mergePDFs':
+    post:
+      tags:
+        - documents
+      summary: receive ids of pdfs to merge together and specs of new file
+      parameters:
+        - in: header
+          name: x-access-token
+          schema:
+            type: string
+          required: true
+      requestBody:
+       content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/mergePDFs'
+      responses:
+        200:
+          description: new PDF was created successfully
+        400:
+          description: ids not given or invalid
+  
+  '/deleteDocument':
+    post:
+      tags:
+        - documents
+      summary: receive document ids of pdfs to merge together
+      parameters:
+        - in: header
+          name: x-access-token
+          schema:
+            type: string
+          required: true
+      requestBody:
+       content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              documentID:
+                type: string
+      responses:
+        200:
+          description: document deleted successfully    
+        400: 
+         description: document id was invalid or document non existing
+ 
+ 
+
+  '/userInfo':
+    get:
+      tags:
+        - auth/user
+      summary: retrieve all userdata
+      parameters:
+        - in: header
+          name: x-access-token
+          schema:
+            type: string
+          required: true
+      responses:
+        200:
+          description: successful operation
+          content:
+           application/json:
+            schema:
+              type: object
+              properties:
+                institutions:
+                  type: array
+                  items:
+                    type: string
+                  example: [other]
+                _id:
+                  type: string
+                email:
+                  type: string
+                userName:
+                  type: string
+                firstName:
+                  type: string
+                lastName:
+                  type: string
+                lastLoggedIn: 
+                  type: string
+                documentCount: 
+                  type: integer
+                todoCount:
+                  type: integer
+  
+  '/userPicture':
+    get:
+      tags:
+        - auth/user
+      summary: retrieve current user profile picture
+      parameters:
+        - in: header
+          name: x-access-token
+          schema:
+            type: string
+          required: true
+      responses:
+        200:
+          description: user picture
+          content:
+            image/png:
+              schema:
+                type: string
+                format: binary
+        500:
+          description: could not retireve picture
+
+  '/register':
+    post:
+      tags:
+        - auth/user
+      summary: receive user credentials for signup
+      requestBody:
+       content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/userData'
+      responses:
+        200:
+          description: successful operation
+        400:
+          description: Username or Email not unique
+  
+  '/login':
+    post:
+      tags:
+        - auth/user
+      summary: receive user credentials for authentication
+      requestBody:
+       content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/credentials'
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/loginSuccess'
+        404:
+          description: credentials not associated with any user
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/loginFailure'
+        403:
+          description: wrong credentials
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/loginFailure'
+  
+  '/deleteUser':
+    post:
+      tags:
+        - auth/user
+      summary: delete current user and all documents and db entries
+      parameters:
+        - in: header
+          name: x-access-token
+          schema:
+            type: string
+          required: true
+      responses:
+        200:
+          description: user has been deleted successfully, you are being logged out
+        500:
+          description: error during user deletion
+
+
+  '/updatePicture':
+    put:
+      tags:
+        - auth/user
+      summary: receive a new profile picture
+      parameters:
+        - in: header
+          name: x-access-token
+          schema:
+            type: string
+          required: true
+      requestBody:
+       content:
+        multipart/form-data:
+          schema:
+            type: object
+            properties:
+              profileImage: 
+                type: string
+                format: binary
+      responses:
+        200:
+          description: profile picture change successful
+        500:
+          description: no image arrived
+
+  '/changePW':
+    put:
+      tags:
+        - auth/user
+      summary: change password of current user
+      parameters:
+        - in: header
+          name: x-access-token
+          schema:
+            type: string
+          required: true
+      requestBody:
+       content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              password:
+                type: string
+      responses:
+        200:
+          description: password change successful
+        
+        500:
+          description: error changing password
+  
+  '/editUser':
+    put:
+      tags:
+        - auth/user
+      summary: receive user properties to update
+      parameters:
+        - in: header
+          name: x-access-token
+          schema:
+            type: string
+          required: true
+      requestBody:
+       content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              email:
+                type: string
+              firstName: 
+                type: string
+              lastName:
+                type: string
+      responses:
+        200:
+          description: change of profile data successful
+        500:
+          description: error while changing user data
+  
+  
+  
+  
+  
+  '/institutions':
+    get:
+      tags:
+        - institutions
+      summary: retrieve all institutions of current user 
+      parameters:
+        - in: header
+          name: x-access-token
+          schema:
+            type: string
+          required: true
+      responses:
+        200:
+          description: successful operation
+          content:
+           application/json:
+            schema:
+              type: object
+              properties:
+                institutions:
+                  type: array
+                  items:
+                    type: string
+                  example: [other]
+  
+  '/createInstitution':
+    post:
+      tags:
+        - institutions
+      summary: create institution for current user
+      parameters:
+        - in: header
+          name: x-access-token
+          schema:
+            type: string
+          required: true
+      requestBody:
+       content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              institution:
+                type: string
+      responses:
+        '200':
+          description: institution added successfully
+        '400':
+          description: institution not unique
+          content:
+           application/json:
+            schema:
+              type: object
+              properties:
+                error:
+                  type: string
+                  example: Please enter a unique institution
+  
+  '/deleteInstitution':
+    post:
+      tags:
+        - institutions
+      summary: delete institution from current user
+      parameters:
+        - in: header
+          name: x-access-token
+          schema:
+            type: string
+          required: true
+      requestBody:
+       content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              institution:
+                type: string
+      responses:
+        200:
+          description: institution delete successfully
+        400:
+          description: institution not existing for current user
+        500:
+          description: failed operation
+          content:
+           application/json:
+            schema:
+             $ref: '#/components/schemas/error'
+ 
+  '/addInstitutionToDocument':
+    post:
+      tags:
+        - institutions
+      summary: add institution to document specified by id
+      parameters:
+        - in: header
+          name: x-access-token
+          schema:
+            type: string
+          required: true
+      requestBody:
+       content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/institutionWithID'
+      responses:
+        200:
+          description: institution successfully added to document
+        400:
+          description: institution already existing in document
+        500:
+          description: error while adding institution to document
+          content:
+           application/json:
+            schema:
+             $ref: '#/components/schemas/error'
+
+  '/deleteInstitutionFromDocument':
+    post:
+      tags:
+        - institutions
+      summary: delete institution from document specified by id
+      parameters:
+        - in: header
+          name: x-access-token
+          schema:
+            type: string
+          required: true
+      requestBody:
+       content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/institutionWithID'
+      responses:
+        200:
+          description: institution deleted successfully
+        400:
+          description: institution does not exist in document
+        404: 
+          description: document id not associated to any document
+        500:
+          description: error deleting institution
+          content:
+           application/json:
+            schema:
+             $ref: '#/components/schemas/error'
+  
+
+  '/todos':
+    get:
+      tags:
+        - todos
+      summary: retrieve all todos of current user
+      parameters:
+        - in: header
+          name: x-access-token
+          schema:
+            type: string
+          required: true
+      responses:
+        200:
+          description: successful operation
+          content:
+           application/json:
+            schema:
+             $ref: '#/components/schemas/todos'
+        500:
+          description: error getting todos
+          content:
+           application/json:
+            schema:
+             $ref: '#/components/schemas/error' 
+             
+  '/createTodo':
+    post:
+      tags:
+        - todos
+      summary: create todo for current user
+      parameters:
+        - in: header
+          name: x-access-token
+          schema:
+            type: string
+          required: true
+      requestBody:
+       content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/todoTitle'
+      responses:
+        200:
+          description: successful operation
+        500:
+          description: failed operation
+          content:
+           application/json:
+            schema:
+             $ref: '#/components/schemas/error'
+             
+  '/deleteTodo':
+    post:
+      tags:
+        - todos
+      summary: delete todo from current user
+      parameters:
+        - in: header
+          name: x-access-token
+          schema:
+            type: string
+          required: true
+      requestBody:
+       content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/todoID'
+      responses:
+        200:
+          description: successful operation
+        500:
+          description: failed operation
+          content:
+           application/json:
+            schema:
+             $ref: '#/components/schemas/error' 
+             
+  '/markTodo':
+    post:
+      tags:
+        - todos
+      summary: set marked attribute of todo to true
+      parameters:
+        - in: header
+          name: x-access-token
+          schema:
+            type: string
+          required: true
+      requestBody:
+       content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/todoID'
+      responses:
+        '200':
+          description: successful operation
+        '500':
+          description: failed operation
+          content:
+           application/json:
+            schema:
+             $ref: '#/components/schemas/error' 
+             
+  '/unmarkTodo':
+    post:
+      tags:
+        - todos
+      summary: set marked attribute of todo to false
+      parameters:
+        - in: header
+          name: x-access-token
+          schema:
+            type: string
+          required: true
+      requestBody:
+       content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/todoID'
+      responses:
+        '200':
+          description: successfully unmarked todo
+        '500':
+          description: error unmarking todo
+          content:
+           application/json:
+            schema:
+             $ref: '#/components/schemas/error' 
+              
+             
+  
+components:
+  schemas:
+            
+    userData:
+      type: object
+      required:
+        - email
+        - username
+        - firstName
+        - lastName
+        - password
+      properties:
+        email: 
+          type: string
+        username:
+          type: string
+        firstName:
+          type: string
+        lastName:
+          type: string
+        password:
+          type: string
+    credentials:
+      type: object
+      required:
+        - userIdentifier
+        - password
+      properties:
+        userIdentifier:
+          type: string
+        password:
+          type: string
+    loginSuccess:
+      type: object
+      properties:
+        loginStatus:
+          type: boolean
+        token:
+          type: string
+    loginFailure:
+      type: object
+      properties:
+        loginStatus:
+          type: string
+          example: false
+        token:
+          type: string
+          example: ""
+        error:
+          type: string
+          example: err
+          
+    institutionWithID:
+      type: object
+      properties:
+        institution: 
+          type: string
+        documentID:
+          type: string
+    todoTitle:
+      type: object
+      properties:
+        todoTitle:
+          type: string
+    todoID:
+      type: object
+      properties:
+        todoID: 
+          type: string
+    todos:
+      type: object
+      properties:
+        todos:
+          type: array
+          items:
+            type: object
+            properties:
+              title:
+                type: string
+              marked: 
+                type: boolean
+    documentNoID:
+      type: array
+      items:
+        type: object
+        properties:
+          year:
+            type: integer
+          month:
+            type: integer
+          institution:
+            type: string
+            maxLength: 50
+          importance:
+            type: integer
+          description:
+            type: string
+            maxLength: 200
+          title:
+            type: string
+          id: 
+            type: string
+    mergePDFs:
+      type: object
+      properties:
+        pdfArray:
+          type: array
+          items:
+            type: string
+            example: PDFid
+        year:
+          type: integer
+        month:
+          type: integer
+        institution:
+          type: string
+        importance:
+          type: integer
+        title:
+          type: string
+    documentSpecs:
+      type: object
+      properties:
+        year:
+          type: integer
+        month:
+          type: integer
+        institution:
+          type: string
+        importance:
+          type: integer
+        description:
+          type: string
+        title:
+          type: string
+          
+    error:
+      type: object
+      properties:
+        error:
+          type: string
+          example: err
+      

@@ -1,5 +1,5 @@
-const gulp = require('gulp');
 const exec = require('child_process').exec;
+const gulp = require('gulp');
 const mocha = require('gulp-mocha');
 
 gulp.task('docker:useImage', runCommand('docker-compose up -d'));
