@@ -6,8 +6,8 @@
   "scripts": {
     "test": "mocha",
     "start": "node app.js",
-    "gulp-up": "gulp docker:up",
-    "gulp-down": "gulp docker:down",
+    "gulp-run": "gulp docker:up",
+    "gulp-destroy": "gulp docker:down",
     "gulp-start": "gulp docker:start",
     "gulp-stop": "gulp docker:stop",
     "gulp-runImage": "gulp docker:runImage"

@@ -6,7 +6,7 @@ gulp.task('docker:useImage', runCommand('docker-compose up -d'));
 gulp.task('docker:pullImage', runCommand('docker pull leonfeldmann/dcadmin_backend_image'));
 gulp.task('docker:build', runCommand('docker-compose build'));
 gulp.task('test', (cb) => {
-  gulp.src('./dockerFiles/test/test.js').pipe(mocha({reporter: 'list', exit: true}));
+  gulp.src('./src/test/test.js').pipe(mocha({reporter: 'list', exit: true}));
   cb();
 });
 

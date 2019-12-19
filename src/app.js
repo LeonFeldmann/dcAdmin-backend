@@ -1,9 +1,9 @@
 /* eslint-disable quotes */
-const bodyParser = require('./node_modules/body-parser');
-const cors = require('./node_modules/cors');
-const express = require('./node_modules/express');
-const fs = require('./node_modules/fs-extra');
-const jwt = require('./node_modules/jsonwebtoken');
+const bodyParser = require('body-parser');
+const cors = require('cors');
+const express = require('express');
+const fs = require('fs-extra');
+const jwt = require('jsonwebtoken');
 const mongoose = require('mongoose');
 const Schemata = require('./models/user');
 const User = mongoose.model('user', Schemata.User);
@@ -14,7 +14,7 @@ const app = express();
 // Connect to MongoDB
 mongoose
   .connect(
-    'mongodb://mongo:27017/webfileviewer-backend',
+    'mongodb://mongo:27017/dcadmin-cont',
     { useNewUrlParser: true }
   )
   .then(() => console.log('MongoDB Connected'))
@@ -23,7 +23,7 @@ mongoose
 app.use(cors());
 app.use(bodyParser.json({ extended: true }));
 
-app.use(require('./node_modules/express-session')({
+app.use(require('express-session')({
   secret: 'Anything at all',
   resave: false,
   saveUninitialized: false,
