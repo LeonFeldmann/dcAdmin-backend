@@ -8,6 +8,8 @@ In this case 6 of our Analysis II scripts serve as test documents for our servic
 Please note also that some route already exist, but are not yet used/addressed by the frontend(for example mergePDF)
 Please also note that because of the simplicity and small number of methods in the backend, and the existing documentation through the YAML file, the use of jsdoc was deemed pointless.
 
+
+
 Starting the app:
 requirements: 
 - have docker installed
