@@ -9,28 +9,30 @@ There they can be accessed since when moving the files, the new filepath will be
 Please note that some routes already exist, but are not yet used/addressed by the frontend(for example mergePDF)
 Please also note that because of the simplicity and small number of methods in the backend, and the existing documentation through the YAML file, the use of jsdoc was deemed pointless.
 Linting of the backend has been done using the ESLing extension of VS-Code and will as such not be executed in the build process.
+It is important to start the backend prior to starting the frontend, so that automated end-to-end tests can run.
 
-Starting the app:
+## Starting the app:
 requirements: 
-- have docker installed
+- have docker installed (maybe also a separate docker-compose installation is required, depending on os)
 - have node installed
 
 The backend is intended to be started by npm scripts 
 which in turn use gulp to build and start/stop the app (via docker)
 This way there is no need to have gulp installed globally.
 
-Quick start guide:
-npm i
-npm run gulp:run
+## Quick start guide:
+- navigate inside the project folder
+`npm i`
+`npm run gulp:run`
 
 Commands:
-'npm i'                 ; run in the directory to install dependencies
-'npm run gulp-run'      ; to build the image, start the application via docker-compose and run tests
+`npm i`                 ; run in the directory to install dependencies
+`npm run gulp-run`      ; to build the image, start the application via docker-compose and run tests
                         ; the backend will be available on localhost:3000
-'npm run gulp-destroy'  ; to stop the app and remove the docker-compose container with db information and the image 
-'npm run gulp-stop'     ; to stop the app (and keep the db information)
-'npm run gulp-start'    ; to start the app again and use existing db information
+`npm run gulp-destroy`  ; to stop the app and remove the docker-compose container with db information and the image 
+`npm run gulp-stop`     ; to stop the app (and keep the db information)
+`npm run gulp-start`    ; to start the app again and use existing db information
 
 The following command allows you to pull the docker image for the backend from my dockerhub account 
 and run the application using this image(without having to build locally).
-'npm run gulp-runImage'
+`npm run gulp-runImage`
