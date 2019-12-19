@@ -15,7 +15,7 @@ RUN npm install
 
 # Bundle app source
 COPY . .
-COPY ./dockerfiles/. .
+COPY ./dockerFiles/. .
  
 EXPOSE 3000
  

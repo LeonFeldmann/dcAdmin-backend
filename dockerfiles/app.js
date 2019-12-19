@@ -1,18 +1,12 @@
 /* eslint-disable quotes */
-const bodyParser = require('body-parser');
-const cors = require('cors');
-const express = require('express');
-const fs = require('fs-extra');
-const jwt = require('jsonwebtoken');
-// const merge = require('easy-pdf-merge');
+const bodyParser = require('./node_modules/body-parser');
+const cors = require('./node_modules/cors');
+const express = require('./node_modules/express');
+const fs = require('./node_modules/fs-extra');
+const jwt = require('./node_modules/jsonwebtoken');
 const mongoose = require('mongoose');
-// const multer = require('multer');
-// const path = require('path');
 const Schemata = require('./models/user');
-// const Document = require('./models/document');
 const User = mongoose.model('user', Schemata.User);
-// const Todo = mongoose.model('todo', Schemata.Todo);
-// const upload = multer({dest: "newFiles"});
 const port = 3000;
 
 const app = express();
@@ -29,7 +23,7 @@ mongoose
 app.use(cors());
 app.use(bodyParser.json({ extended: true }));
 
-app.use(require('express-session')({
+app.use(require('./node_modules/express-session')({
   secret: 'Anything at all',
   resave: false,
   saveUninitialized: false,
@@ -105,49 +99,6 @@ function validateToken(req, res, next) {
     });
   });
 }
-
-app.post('/test', (req, res) => {
-  const dir = `./files/`;
-
-  fs.readdir(dir, (err, files) => {
-    if (err) {
-      console.log(err);
-    } else {
-      files.forEach((file) => {
-        console.log(file);
-      });
-    }
-  });
-  res.sendStatus(200);
-});
-
-app.post('/testAll', (req, res) => {
-  fs.readdir("./", (err, files) => {
-    if (err) {
-      console.log(err);
-    } else {
-      files.forEach((file) => {
-        console.log(file);
-      });
-    }
-  });
-  res.sendStatus(200);
-});
-
-app.post('/testUser', validateToken, (req, res) => {
-  const dir = `./files/${res.locals.user.username}`;
-  fs.readdir(dir, (err, files) => {
-    if (err) {
-      console.log(err);
-    } else {
-      files.forEach((file) => {
-        console.log(file);
-      });
-    }
-  });
-
-  res.sendStatus(200);
-});
 
 require('./app/routes/institution_routes')(app, validateToken, checkBodyForValidAttributes);
 require('./app/routes/todo_routes')(app, validateToken, checkBodyForValidAttributes);

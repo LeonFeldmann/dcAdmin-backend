@@ -1,10 +1,11 @@
 version: '3'
 services:
   app:
-    container_name: webfileviewer-backend
+    container_name: dcadmin-cont
     build:
         context: .
         dockerfile: Dockerfile
+    image: leonfeldmann/dcadmin_backend_image
     ports:
       - '3000:3000'
     links:

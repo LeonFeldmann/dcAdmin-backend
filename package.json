@@ -1,15 +1,16 @@
 {
-  "name": "fileviewerbackend",
+  "name": "dcAdmin-backend",
   "version": "1.0.0",
-  "description": "This is the Backend of the FileViewerProject",
+  "description": "This is the Backend of the dcAdmin project",
   "main": "app.js",
   "scripts": {
     "test": "mocha",
     "start": "node app.js",
-    "server:up": "gulp docker:up",
-    "server:down": "gulp docker:down",
-    "server:start": "gulp docker:start",
-    "server:stop": "gulp docker:stop"
+    "gulp-up": "gulp docker:up",
+    "gulp-down": "gulp docker:down",
+    "gulp-start": "gulp docker:start",
+    "gulp-stop": "gulp docker:stop",
+    "gulp-runImage": "gulp docker:runImage"
   },
   "dependencies": {
     "assert": "^2.0.0",

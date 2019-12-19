@@ -1,14 +1,11 @@
-const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
-// eslint-disable-next-line no-unused-vars
+const mongoose = require('mongoose');
 
 const TodoSchema = new mongoose.Schema({
   title: String,
   marked: Boolean,
   user: String,
 });
-
-
 
 const UserSchema = new mongoose.Schema({
   email: String,

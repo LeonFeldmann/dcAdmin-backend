@@ -14,7 +14,7 @@ const Todo        = mongoose.model('todo', Schemata.Todo);
 
 
 // describe tests
-describe('very basic test', function(cb){
+describe('basic database tests', function(cb){
 
     // create tests
     it('create a user', function(done) {

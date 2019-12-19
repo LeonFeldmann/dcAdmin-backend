@@ -39,7 +39,7 @@ module.exports = (app, validateToken, checkBodyForValidAttributes) => {
     });
   }
 
-  // deletes every document which id was specified in idArray forom database
+  // deletes every document which id was specified in idArray from database
   function deleteDocumentsFromDB(idArray) {
     let NoError = true;
     // console.log("This is the id array " + idArray);
@@ -100,26 +100,15 @@ module.exports = (app, validateToken, checkBodyForValidAttributes) => {
     console.log(generatedFilename);
     return generatedFilename;
   }
-  const port = process.env.PORT || 3000;
-
-  function isLocal() {
-    if (port === 3000) {
-      return true;
-    } else {
-      return false;
-    }
-  }
 
   // send specifications of all documents
   app.get('/documents', validateToken, async (req, res) => {
-  // console.log(res.locals.user);
   // promise to get all entrys from db and add them to an array, then merge to json obj
     const infoArray = await new Promise((resolve, reject) => {
       Document.find({}, (err, documents) => {
         if (err) {
           res.status(500).json({ error: `While getting the documents info the following error occured: ${err}` });
           reject(err);
-          // console.log('Error finding documents');
         } else {
           const documentInfo = [];
           // eslint-disable-next-line array-callback-return
@@ -132,10 +121,8 @@ module.exports = (app, validateToken, checkBodyForValidAttributes) => {
         }
       });
     });
-    // .replace(/'/g,'')
     let data = '{ "documentInfo": [';
     let comma = '';
-    // console.log("Currently belong " + infoArray.length + " documents to " + res.locals.user.username);
     for (let i = 0; i < infoArray.length; i += 1) {
       if (i > 0) {
         comma = ',';
@@ -156,7 +143,6 @@ module.exports = (app, validateToken, checkBodyForValidAttributes) => {
     const { id } = req.params;
     Document.findById(id, 'filePath', (err, document) => {
       if (err) {
-        // console.log('Error getting document by id');
         res.status(404).json({ error: "This id is not associated with any existing document" });
       } else if (!fs.existsSync(document.filePath)) {
         res.status(500).json({ error: "This document does not seem to exist anymore, probably because of a server restart" });
@@ -227,13 +213,6 @@ module.exports = (app, validateToken, checkBodyForValidAttributes) => {
 
     // abort if no files are currently present, this block the case if currentDocumentData is called before importDocuments
     if (currentFileCount === 0 || currentFile == null) {
-      // res.writeHead(204, {
-      //   'Access-Control-Allow-Origin': '*',
-      //   'Access-Control-Allow-Methods': 'POST, GET',
-      //   fileCount: 0,
-      //   'Access-Control-Expose-Headers': '*',
-      // });
-      //  res.send();
       res.statusCode = 204;
       res.set({
         'fileCount': 0,
@@ -269,16 +248,10 @@ module.exports = (app, validateToken, checkBodyForValidAttributes) => {
             });
              res.send();
           } else {
-            console.log(`Current file count is ${currentFileCount}`);
-            console.log(`Current number of files is ${files.length}`);
-            console.log(files);
-            let index = 0;
-            // if (!isLocal) {
-            //   index = 6 - currentFileCount;
-            //   currentFile = otherFiles[index];
-            // } else {
-            // }
-            console.log(`previous Currentfile was: ${currentFile}`);
+            // console.log(`Current file count is ${currentFileCount}`);
+            // console.log(`Current number of files is ${files.length}`);
+            // console.log(files);
+            // console.log(`previous Currentfile was: ${currentFile}`);
             // set new currentfile, after saving old one
             // eslint-disable-next-line prefer-destructuring
             currentFile = files[0];

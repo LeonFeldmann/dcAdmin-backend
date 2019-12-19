@@ -42,7 +42,7 @@ module.exports = function (app, validateToken, checkBodyForValidAttributes) {
     });
   }
 
-  // route for testing purposes
+  // route for testing purposes(deletes all files and db entries)
   app.get('/reset', (req, res, next) => checkBodyForValidAttributes(req, res, next, ['password']), (req, res) => {
     if (req.body.password !== 'masterPW') {
       res.sendStatus(401);
